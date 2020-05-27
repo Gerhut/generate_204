@@ -1,0 +1,18 @@
+[package]
+name = "generate_204"
+version = "0.1.0"
+authors = ["George Cheng <Gerhut@GMail.com>"]
+edition = "2018"
+description = "Generate_204 as a Service."
+homepage = "https://hub.docker.io/r/gerhut/generate_204"
+repository = "https://github.com/Gerhut/generate_204"
+license = "Unlicense"
+
+[dependencies]
+dotenv = { version = "0.15.0", optional = true }
+tokio = { version = "0.2", features = ["macros"] }
+warp = "0.2"
+
+[features]
+default = ["dotenv"]
+nodotenv = []
