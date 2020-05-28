@@ -8,5 +8,5 @@ RUN cargo build --release --features nodotenv
 
 FROM debian
 
-COPY --from=builder /usr/src/app/target/releast/generate_204 /usr/local/bin/
+COPY --from=builder /usr/src/app/target/release/generate_204 /usr/local/bin/
 ENTRYPOINT generate_204
