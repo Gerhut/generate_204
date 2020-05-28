@@ -1,14 +1,15 @@
-use std::env;
-use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 #[cfg(not(feature = "nodotenv"))]
 use dotenv::dotenv;
-use warp::Filter;
+use std::env;
+use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use warp::http::StatusCode;
+use warp::{Filter, Reply};
 
-fn generate_204() -> impl Filter<Extract = (impl warp::Reply,)> + Copy {
+fn generate_204() -> impl Filter<Extract = (impl Reply,)> + Copy {
     warp::get()
         .and(warp::path("generate_204"))
         .map(warp::reply)
-        .map(|reply| warp::reply::with_status(reply, warp::http::StatusCode::NO_CONTENT))
+        .map(|reply| warp::reply::with_status(reply, StatusCode::NO_CONTENT))
 }
 
 #[tokio::main]
@@ -18,9 +19,13 @@ async fn main() {
     #[cfg(not(feature = "nodotenv"))]
     dotenv().ok();
 
-    let ip = env::var("HOST").map(|s| s.parse().expect("Parsing HOST"))
+    let ip = env::var("HOST")
+        .ok()
+        .and_then(|s| s.parse().ok())
         .unwrap_or(IpAddr::V4(Ipv4Addr::LOCALHOST));
-    let port = env::var("PORT").map(|s| s.parse().expect("Parsing PORT"))
+    let port = env::var("PORT")
+        .ok()
+        .and_then(|s| s.parse().ok())
         .unwrap_or(80);
     let address = SocketAddr::new(ip, port);
 
