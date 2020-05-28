@@ -1,4 +1,6 @@
-FROM rust as builder
+FROM rustlang/rust:nightly-alpine as builder
+
+RUN apk add --no-cache musl-dev
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
@@ -6,7 +8,7 @@ WORKDIR /usr/src/app
 COPY . .
 RUN cargo build --release --features nodotenv
 
-FROM debian
+FROM alpine
 
 COPY --from=builder /usr/src/app/target/release/generate_204 /usr/local/bin/
 
