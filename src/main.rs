@@ -6,8 +6,7 @@ use warp::http::StatusCode;
 use warp::{Filter, Reply};
 
 fn generate_204() -> impl Filter<Extract = (impl Reply,)> + Copy {
-    warp::get()
-        .and(warp::path("generate_204"))
+    warp::any()
         .map(warp::reply)
         .map(|reply| warp::reply::with_status(reply, StatusCode::NO_CONTENT))
 }
