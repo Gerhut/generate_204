@@ -15,4 +15,3 @@ warp = "0.2"
 
 [features]
 default = ["dotenv"]
-nodotenv = []

@@ -6,7 +6,7 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 COPY . .
-RUN cargo build --release --features nodotenv
+RUN cargo build --release --no-default-features
 
 FROM alpine
 

@@ -1,4 +1,4 @@
-#[cfg(not(feature = "nodotenv"))]
+#[cfg(feature = "dotenv")]
 use dotenv::dotenv;
 use std::env;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
@@ -15,7 +15,7 @@ fn generate_204() -> impl Filter<Extract = (impl Reply,)> + Copy {
 async fn main() {
     let filter = generate_204();
 
-    #[cfg(not(feature = "nodotenv"))]
+    #[cfg(feature = "dotenv")]
     dotenv().ok();
 
     let ip = env::var("HOST")
