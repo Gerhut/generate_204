@@ -1,23 +1,18 @@
-#[cfg(feature = "dotenv")]
-use dotenv::dotenv;
 use std::env;
+use std::error::Error;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
-use warp::http::StatusCode;
-use warp::{Filter, Reply};
 
-fn generate_204() -> impl Filter<Extract = (impl Reply,)> + Copy {
-    warp::any()
-        .map(warp::reply)
-        .map(|reply| warp::reply::with_status(reply, StatusCode::NO_CONTENT))
+use tide::{Response, Server, StatusCode};
+
+fn app() -> Server<()> {
+    let mut app = tide::new();
+    let f = |_| async { Ok(Response::new(StatusCode::NoContent)) };
+    app.at("/").all(f).at("*").all(f);
+    app
 }
 
-#[tokio::main]
-async fn main() {
-    let filter = generate_204();
-
-    #[cfg(feature = "dotenv")]
-    dotenv().ok();
-
+#[async_std::main]
+async fn main() -> Result<(), Box<dyn Error>> {
     let ip = env::var("HOST")
         .ok()
         .and_then(|s| s.parse().ok())
@@ -28,16 +23,54 @@ async fn main() {
         .unwrap_or(80);
     let address = SocketAddr::new(ip, port);
 
-    warp::serve(filter).run(address).await;
+    app().listen(address).await?;
+
+    Ok(())
 }
 
-#[tokio::test]
-async fn test() {
-    let filter = generate_204();
-    let reply = warp::test::request()
-        .method("GET")
-        .path("/generate_204")
-        .reply(&filter)
-        .await;
-    assert_eq!(reply.status(), 204);
+#[cfg(test)]
+mod test {
+    use std::error::Error;
+
+    use tide::http::{Method, Request, Response, StatusCode};
+
+    #[async_std::test]
+    async fn get_root() -> Result<(), Box<dyn Error>> {
+        let response: Response = super::app()
+            .respond(Request::new(Method::Get, "https://example.com/"))
+            .await?;
+        assert_eq!(response.status(), StatusCode::NoContent);
+
+        Ok(())
+    }
+
+    #[async_std::test]
+    async fn get_non_root() -> Result<(), Box<dyn Error>> {
+        let response: Response = super::app()
+            .respond(Request::new(Method::Get, "https://example.com/generate_204"))
+            .await?;
+        assert_eq!(response.status(), StatusCode::NoContent);
+
+        Ok(())
+    }
+
+    #[async_std::test]
+    async fn post_root() -> Result<(), Box<dyn Error>> {
+        let response: Response = super::app()
+            .respond(Request::new(Method::Post, "https://example.com/"))
+            .await?;
+        assert_eq!(response.status(), StatusCode::NoContent);
+
+        Ok(())
+    }
+
+    #[async_std::test]
+    async fn post_non_root() -> Result<(), Box<dyn Error>> {
+        let response: Response = super::app()
+            .respond(Request::new(Method::Post, "https://example.com/generate_204"))
+            .await?;
+        assert_eq!(response.status(), StatusCode::NoContent);
+
+        Ok(())
+    }
 }
