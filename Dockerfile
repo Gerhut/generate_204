@@ -6,7 +6,7 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 COPY . .
-RUN cargo build --release --no-default-features
+RUN cargo build --release
 
 FROM alpine
 

@@ -1,6 +1,6 @@
 [package]
 name = "generate_204"
-version = "0.1.0"
+version = "0.4.0"
 authors = ["George Cheng <Gerhut@GMail.com>"]
 edition = "2018"
 description = "Generate_204 as a Service."
