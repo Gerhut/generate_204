@@ -10,4 +10,4 @@ license = "Unlicense"
 
 [dependencies]
 tide = "0.16.0"
-async-std = { version = "1.13.1", features = ["attributes"] }
+async-std = { version = "1.13.2", features = ["attributes"] }
